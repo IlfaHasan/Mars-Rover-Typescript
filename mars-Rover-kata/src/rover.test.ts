@@ -2,18 +2,10 @@ type Heading = "N" | "W" | "S" | "E";
 const direction: Array<Heading> = ["N", "E", "S", "W"];
 
 
-const turnLeft = (x: string) => {
-  switch (x) {
-    case "N":
-      return "W";
-    case "W":
-      return "S";
-    case "S":
-      return "E";
-    case "E":
-      return "N";
-  }
-};
+const turnLeft =(heading: Heading) => {
+    const index = direction.indexOf(heading);
+    return direction[(index+3)%4];
+}
 
 //turnRight
 const turnRight = (heading: Heading) => {

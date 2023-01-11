@@ -1,6 +1,6 @@
 type Heading = "N" | "W" | "S" | "E";
 type Coordinates = [x: number, y: number];
-type Rover = { heading: Heading; position: Coordinates };
+type RoverState = { heading: Heading; position: Coordinates };
 const direction: Array<Heading> = ["N", "E", "S", "W"];
 
 const moveRover = (heading: Heading, position: Coordinates) => {
@@ -16,9 +16,10 @@ const spin = (turns: number) => (heading: Heading) => {
   return direction[(index + turns) % 4];
 };
 
-const act = (command: string, state: Rover) => {
+const act = (command: string, state: RoverState) => {
   if (command === "L") return { ...state, heading: turnLeft(state.heading) };
   if (command === "R") return { ...state, heading: turnRight(state.heading) };
+  if (command === "M") return { ...state, position: moveRover(state.heading,state.position) };
 };
 //turnLeft
 const turnLeft = spin(3);
@@ -29,18 +30,18 @@ const turnRight = spin(1);
 
 test.each`
   original | expected | direction
-  ${"N"}   | ${"E"} | ${"R"}
-  ${"E"}   | ${"S"} | ${"R"}
-  ${"S"}   | ${"W"} | ${"R"}
-  ${"W"}   | ${"N"} | ${"R"}
-  ${"N"}   | ${"W"} | ${"L"}
-  ${"W"}   | ${"S"} | ${"L"}
-  ${"S"}   | ${"E"} | ${"L"}
-  ${"E"}   | ${"N"} | ${"L"}
+  ${"N"}   | ${"E"}   | ${"R"}
+  ${"E"}   | ${"S"}   | ${"R"}
+  ${"S"}   | ${"W"}   | ${"R"}
+  ${"W"}   | ${"N"}   | ${"R"}
+  ${"N"}   | ${"W"}   | ${"L"}
+  ${"W"}   | ${"S"}   | ${"L"}
+  ${"S"}   | ${"E"}   | ${"L"}
+  ${"E"}   | ${"N"}   | ${"L"}
 `(
   "facing $original and the command given should face the rover to $expected",
   ({ original, expected, direction }) => {
-    const initialState: Rover = { heading: original, position: [1, 1] };
+    const initialState: RoverState = { heading: original, position: [1, 1] };
     expect(act(direction, initialState)).toEqual({
       ...initialState,
       heading: expected,
@@ -48,26 +49,19 @@ test.each`
   }
 );
 
-/*test.each`
-  original | expected
-  ${"N"}   | ${"W"}
-  ${"W"}   | ${"S"}
-  ${"S"}   | ${"E"}
-  ${"E"}   | ${"N"}
-`(
-  "facing $original and L command should face the rover to $expected",
-  ({ original, expected }) => {
-    const initialState: Rover = { heading: original, position: [1, 1] };
-    expect(act("L", initialState)).toEqual({
-      ...initialState,
-      heading: expected,
-    });
-  }
-);*/
+/*test("When moving N,increment y coordinate by 1 keeping x coordinate unchanged", () => {
+  expect(moveRover("N", [1, 1])).toEqual([1, 2]);
+});*/
 
 test("When moving N,increment y coordinate by 1 keeping x coordinate unchanged", () => {
-  expect(moveRover("N", [1, 1])).toEqual([1, 2]);
+  const initialState: RoverState = { heading: "N", position: [1, 1] };
+    expect(act("M", initialState)).toEqual({
+      ...initialState,
+      position: [1,2],
+    });
 });
+
+
 test("When moving E,increment x coordinate by 1 keeping y coordinate unchanged", () => {
   expect(moveRover("E", [1, 1])).toEqual([2, 1]);
 });

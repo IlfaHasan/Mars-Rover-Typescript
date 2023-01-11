@@ -30,11 +30,11 @@ test.each`
   ${"W"} | ${"S"}
   ${"S"} | ${"E"}
   ${"E"} | ${"N"}
-`('returns facing $original turnRight should face the rover to $expected', ({original, expected}) => expect(turnLeft(original)).toBe(expected)
+`('returns facing $original turnLeft should face the rover to $expected', ({original, expected}) => expect(turnLeft(original)).toBe(expected)
 );
 
 //turnRight
-test("When facing N,turn right should face the Rover W", () => {
+/*test("When facing N,turn right should face the Rover W", () => {
   expect(turnRight("N")).toBe("E");
 });
 test("When facing W,turn right should face the Rover S", () => {
@@ -45,7 +45,15 @@ test("When facing S,turn right should face the Rover E", () => {
 });
 test("When facing E,turn right should face the Rover N", () => {
   expect(turnRight("W")).toBe("N");
-});
+});*/
+test.each`
+  original | expected
+  ${"N"} | ${"E"}
+  ${"E"} | ${"S"}
+  ${"S"} | ${"W"}
+  ${"W"} | ${"N"}
+`('returns facing $original turnRight should face the rover to $expected', ({original, expected}) => expect(turnRight(original)).toBe(expected)
+);
 
 test("When moving N,increment y coordinate by 1 keeping x coordinate unchanged", () => {
   expect(moveRover("N", [1, 1])).toEqual([1, 2]);

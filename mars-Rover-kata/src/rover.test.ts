@@ -49,9 +49,6 @@ test.each`
   }
 );
 
-/*test("When moving N,increment y coordinate by 1 keeping x coordinate unchanged", () => {
-  expect(moveRover("N", [1, 1])).toEqual([1, 2]);
-});*/
 
 test("When moving N,increment y coordinate by 1 keeping x coordinate unchanged", () => {
   const initialState: RoverState = { heading: "N", position: [1, 1] };
@@ -61,13 +58,26 @@ test("When moving N,increment y coordinate by 1 keeping x coordinate unchanged",
     });
 });
 
-
 test("When moving E,increment x coordinate by 1 keeping y coordinate unchanged", () => {
-  expect(moveRover("E", [1, 1])).toEqual([2, 1]);
+  const initialState: RoverState = { heading: "E", position: [1, 1] };
+    expect(act("M", initialState)).toEqual({
+      ...initialState,
+      position: [2,1],
+    });
 });
+
 test("When moving S,decrement y coordinate by 1 keeping x coordinate unchanged", () => {
-  expect(moveRover("S", [1, 1])).toEqual([1, 0]);
+  const initialState: RoverState = { heading: "S", position: [1, 1] };
+    expect(act("M", initialState)).toEqual({
+      ...initialState,
+      position: [1,0],
+    });
 });
+
 test("When moving W,decrement x coordinate by 1 keeping y coordinate unchanged", () => {
-  expect(moveRover("W", [1, 1])).toEqual([0, 1]);
+  const initialState: RoverState = { heading: "W", position: [1, 1] };
+    expect(act("M", initialState)).toEqual({
+      ...initialState,
+      position: [0,1],
+    });
 });

@@ -16,10 +16,10 @@ const spin = (turns: number) => (heading: Heading) => {
   return direction[(index + turns) % 4];
 };
 
-const act = (command: string, state: Rover) => ({
-  ...state,
-  heading: turnLeft(state.heading),
-});
+const act = (command: string, state: Rover) => {
+  if (command === "L") return { ...state, heading: turnLeft(state.heading) };
+  if (command === "R") return { ...state, heading: turnRight(state.heading) };
+};
 //turnLeft
 const turnLeft = spin(3);
 
@@ -35,7 +35,7 @@ const turnRight = spin(1);
 `('returns facing $original turnLeft should face the rover to $expected', ({original, expected}) => expect(turnLeft(original)).toBe(expected)
 );*/
 
-test.each`
+/*test.each`
   original | expected
   ${"N"}   | ${"E"}
   ${"E"}   | ${"S"}
@@ -44,6 +44,23 @@ test.each`
 `(
   "returns facing $original turnRight should face the rover to $expected",
   ({ original, expected }) => expect(turnRight(original)).toBe(expected)
+);*/
+
+test.each`
+  original | expected
+  ${"N"}   | ${"E"}
+  ${"E"}   | ${"S"}
+  ${"S"}   | ${"W"}
+  ${"W"}   | ${"N"}
+`(
+  "returns facing $original turnRight should face the rover to $expected",
+  ({ original, expected }) => {
+    const initialState: Rover = { heading: original, position: [1, 1] };
+    expect(act("R", initialState)).toEqual({
+      ...initialState,
+      heading: expected,
+    });
+  }
 );
 
 test.each`
@@ -55,7 +72,7 @@ test.each`
 `(
   "returns facing $original turnLeft should face the rover to $expected",
   ({ original, expected }) => {
-    const initialState : Rover = { heading: original, position: [1, 1] };
+    const initialState: Rover = { heading: original, position: [1, 1] };
     expect(act("L", initialState)).toEqual({
       ...initialState,
       heading: expected,

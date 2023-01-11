@@ -26,51 +26,36 @@ const turnLeft = spin(3);
 //turnRight
 const turnRight = spin(1);
 
-/*test.each`
-  original | expected
-  ${"N"} | ${"W"}
-  ${"W"} | ${"S"}
-  ${"S"} | ${"E"}
-  ${"E"} | ${"N"}
-`('returns facing $original turnLeft should face the rover to $expected', ({original, expected}) => expect(turnLeft(original)).toBe(expected)
-);*/
-
-/*test.each`
-  original | expected
-  ${"N"}   | ${"E"}
-  ${"E"}   | ${"S"}
-  ${"S"}   | ${"W"}
-  ${"W"}   | ${"N"}
-`(
-  "returns facing $original turnRight should face the rover to $expected",
-  ({ original, expected }) => expect(turnRight(original)).toBe(expected)
-);*/
 
 test.each`
-  original | expected
-  ${"N"}   | ${"E"}
-  ${"E"}   | ${"S"}
-  ${"S"}   | ${"W"}
-  ${"W"}   | ${"N"}
+  original | expected | direction
+  ${"N"}   | ${"E"} | ${"R"}
+  ${"E"}   | ${"S"} | ${"R"}
+  ${"S"}   | ${"W"} | ${"R"}
+  ${"W"}   | ${"N"} | ${"R"}
+  ${"N"}   | ${"W"} | ${"L"}
+  ${"W"}   | ${"S"} | ${"L"}
+  ${"S"}   | ${"E"} | ${"L"}
+  ${"E"}   | ${"N"} | ${"L"}
 `(
-  "returns facing $original turnRight should face the rover to $expected",
-  ({ original, expected }) => {
+  "facing $original and the command given should face the rover to $expected",
+  ({ original, expected, direction }) => {
     const initialState: Rover = { heading: original, position: [1, 1] };
-    expect(act("R", initialState)).toEqual({
+    expect(act(direction, initialState)).toEqual({
       ...initialState,
       heading: expected,
     });
   }
 );
 
-test.each`
+/*test.each`
   original | expected
   ${"N"}   | ${"W"}
   ${"W"}   | ${"S"}
   ${"S"}   | ${"E"}
   ${"E"}   | ${"N"}
 `(
-  "returns facing $original turnLeft should face the rover to $expected",
+  "facing $original and L command should face the rover to $expected",
   ({ original, expected }) => {
     const initialState: Rover = { heading: original, position: [1, 1] };
     expect(act("L", initialState)).toEqual({
@@ -78,7 +63,7 @@ test.each`
       heading: expected,
     });
   }
-);
+);*/
 
 test("When moving N,increment y coordinate by 1 keeping x coordinate unchanged", () => {
   expect(moveRover("N", [1, 1])).toEqual([1, 2]);

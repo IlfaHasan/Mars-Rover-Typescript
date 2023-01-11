@@ -1,5 +1,6 @@
 type Heading = "N" | "W" | "S" | "E";
 type Coordinates = [x: number, y: number];
+type Rover = { heading: Heading; position: Coordinates };
 const direction: Array<Heading> = ["N", "E", "S", "W"];
 
 const moveRover = (heading: Heading, position: Coordinates) => {
@@ -10,49 +11,56 @@ const moveRover = (heading: Heading, position: Coordinates) => {
   if (heading === "W") return [x - 1, y];
 };
 
-
-const spin =(turns:number)=>(heading:Heading)=>
-{
-    const index = direction.indexOf(heading);
+const spin = (turns: number) => (heading: Heading) => {
+  const index = direction.indexOf(heading);
   return direction[(index + turns) % 4];
+};
 
-}
+const act = (command: string, state: Rover) => ({
+  ...state,
+  heading: turnLeft(state.heading),
+});
 //turnLeft
 const turnLeft = spin(3);
-  
 
 //turnRight
 const turnRight = spin(1);
 
-test.each`
+/*test.each`
   original | expected
   ${"N"} | ${"W"}
   ${"W"} | ${"S"}
   ${"S"} | ${"E"}
   ${"E"} | ${"N"}
 `('returns facing $original turnLeft should face the rover to $expected', ({original, expected}) => expect(turnLeft(original)).toBe(expected)
-);
+);*/
 
-//turnRight
-/*test("When facing N,turn right should face the Rover W", () => {
-  expect(turnRight("N")).toBe("E");
-});
-test("When facing W,turn right should face the Rover S", () => {
-  expect(turnRight("E")).toBe("S");
-});
-test("When facing S,turn right should face the Rover E", () => {
-  expect(turnRight("S")).toBe("W");
-});
-test("When facing E,turn right should face the Rover N", () => {
-  expect(turnRight("W")).toBe("N");
-});*/
 test.each`
   original | expected
-  ${"N"} | ${"E"}
-  ${"E"} | ${"S"}
-  ${"S"} | ${"W"}
-  ${"W"} | ${"N"}
-`('returns facing $original turnRight should face the rover to $expected', ({original, expected}) => expect(turnRight(original)).toBe(expected)
+  ${"N"}   | ${"E"}
+  ${"E"}   | ${"S"}
+  ${"S"}   | ${"W"}
+  ${"W"}   | ${"N"}
+`(
+  "returns facing $original turnRight should face the rover to $expected",
+  ({ original, expected }) => expect(turnRight(original)).toBe(expected)
+);
+
+test.each`
+  original | expected
+  ${"N"}   | ${"W"}
+  ${"W"}   | ${"S"}
+  ${"S"}   | ${"E"}
+  ${"E"}   | ${"N"}
+`(
+  "returns facing $original turnLeft should face the rover to $expected",
+  ({ original, expected }) => {
+    const initialState : Rover = { heading: original, position: [1, 1] };
+    expect(act("L", initialState)).toEqual({
+      ...initialState,
+      heading: expected,
+    });
+  }
 );
 
 test("When moving N,increment y coordinate by 1 keeping x coordinate unchanged", () => {

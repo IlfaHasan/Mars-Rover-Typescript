@@ -7,20 +7,23 @@ const moveRover = (heading: Heading, position: Coordinates) => {
   if (heading === "N") return [x, y + 1];
   if (heading === "E") return [x + 1, y];
   if (heading === "S") return [x, y - 1];
-  return [x - 1, y];
+  if (heading === "W") return [x - 1, y];
 };
 
+
+const spin =(turns:number)=>(heading:Heading)=>
+{
+    const index = direction.indexOf(heading);
+  return direction[(index + turns) % 4];
+
+}
 //turnLeft
-const turnLeft = (heading: Heading) => {
-  const index = direction.indexOf(heading);
-  return direction[(index + 3) % 4];
-};
+const turnLeft = spin(3);
+  
 
 //turnRight
-const turnRight = (heading: Heading) => {
-  const index = direction.indexOf(heading);
-  return direction[(index + 1) % 4];
-};
+const turnRight = spin(1);
+
 
 test("When facing N,turn left should face the Rover W", () => {
   expect(turnLeft("N")).toBe("W");
@@ -56,8 +59,8 @@ test("When moving E,increment x coordinate by 1 keeping y coordinate unchanged",
   expect(moveRover("E", [1, 1])).toEqual([2, 1]);
 });
 test("When moving S,decrement y coordinate by 1 keeping x coordinate unchanged", () => {
-    expect(moveRover("S", [1, 1])).toEqual([1, 0]);
-  });
-  test("When moving W,decrement x coordinate by 1 keeping y coordinate unchanged", () => {
-    expect(moveRover("W", [1, 1])).toEqual([0, 1]);
-  });
+  expect(moveRover("S", [1, 1])).toEqual([1, 0]);
+});
+test("When moving W,decrement x coordinate by 1 keeping y coordinate unchanged", () => {
+  expect(moveRover("W", [1, 1])).toEqual([0, 1]);
+});

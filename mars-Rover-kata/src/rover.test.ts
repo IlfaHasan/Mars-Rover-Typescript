@@ -9,25 +9,38 @@ const rover = (heading: Heading, position: Coordinates): RoverState => ({
 });
 const startPosition = () => [1, 1];
 
-const moveRover = (heading: Heading, position: Coordinates) => {
+const getMovedPosition = (heading:Heading,position:Coordinates):Coordinates=> {
   const [x, y] = position;
   if (heading === "N") return [x, y + 1];
   if (heading === "E") return [x + 1, y];
   if (heading === "S") return [x, y - 1];
   if (heading === "W") return [x - 1, y];
+  else return position;
 };
 
-const spin = (turns: number) => (heading: Heading) => {
-  const index = direction.indexOf(heading);
-  return direction[(index + turns) % 4];
+const move=(rover:RoverState) =>({
+  ...rover,position:getMovedPosition(rover.heading,rover.position)})
+
+const spin = (turns: number) => (rover:RoverState) => {
+  const index = direction.indexOf(rover.heading);
+  const newHeading= direction[(index + turns) % 4];
+  return {...rover,heading:newHeading}
 };
 
-export const act = (command: string, state: RoverState) => {
-  if (command === "L") return { ...state, heading: turnLeft(state.heading) };
-  if (command === "R") return { ...state, heading: turnRight(state.heading) };
-  if (command === "M")
-    return { ...state, position: moveRover(state.heading, state.position) };
+export const act = (command: string, state: RoverState):RoverState => {
+  if (command === "L") return turnLeft(state);
+  if (command === "R") return turnRight(state);
+  if (command === "M") return move(state);
+  else return state ;
 };
+
+const runCommand=(commands:string,state:RoverState)=>
+{
+let finalRover=state;
+for(const command of commands.split(''))
+finalRover= act(command,state)
+return finalRover;
+}
 //turnLeft
 const turnLeft = spin(3);
 
@@ -67,4 +80,8 @@ test("When moving S,decrement y coordinate by 1 keeping x coordinate unchanged",
 
 test("When moving W,decrement x coordinate by 1 keeping y coordinate unchanged", () => {
   expect(act("M", rover("W",[1,1]))).toEqual(rover("W",[0,1]));
+});
+
+test("When executing multiple commands", () => {
+  expect(runCommand("LMLMLMLMM", rover("N",[1,2]))).toEqual(rover("N",[1,3]));
 });

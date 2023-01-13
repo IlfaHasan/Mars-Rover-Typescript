@@ -38,7 +38,7 @@ const runCommand=(commands:string,state:RoverState)=>
 {
 let finalRover=state;
 for(const command of commands.split(''))
-finalRover= act(command,state)
+finalRover= act(command,finalRover)
 return finalRover;
 }
 //turnLeft

@@ -27,20 +27,14 @@ const spin = (turns: number) => (rover:RoverState) => {
   return {...rover,heading:newHeading}
 };
 
-export const act = (command: string, state: RoverState):RoverState => {
+export const act = (state: RoverState,command: string ):RoverState => {
   if (command === "L") return turnLeft(state);
   if (command === "R") return turnRight(state);
   if (command === "M") return move(state);
   else return state ;
 };
 
-const runCommand=(commands:string,state:RoverState)=>
-{
-let finalRover=state;
-for(const command of commands.split(''))
-finalRover= act(command,finalRover)
-return finalRover;
-}
+const runCommand=(commands:string,state:RoverState)=>commands.split('').reduce(act,state);
 //turnLeft
 const turnLeft = spin(3);
 
@@ -62,26 +56,30 @@ test.each`
 `(
   "facing $original and the command given should face the rover to $expected",
   ({ original, expected, direction }) => {
-        expect(act(direction, rover(original,[1,1]))).toEqual(rover(expected,[1,1]));
+        expect(runCommand(direction, rover(original,[1,1]))).toEqual(rover(expected,[1,1]));
   }
 );
 
 test("When moving N,increment y coordinate by 1 keeping x coordinate unchanged", () => {
-    expect(act("M", rover("N",[1,1]))).toEqual(rover("N",[1,2]));
+    expect(runCommand("M", rover("N",[1,1]))).toEqual(rover("N",[1,2]));
 });
 
 test("When moving E,increment x coordinate by 1 keeping y coordinate unchanged", () => {
-  expect(act("M", rover("E",[1,1]))).toEqual(rover("E",[2,1]));
+  expect(runCommand("M", rover("E",[1,1]))).toEqual(rover("E",[2,1]));
 });
 
 test("When moving S,decrement y coordinate by 1 keeping x coordinate unchanged", () => {
-  expect(act("M", rover("S",[1,1]))).toEqual(rover("S",[1,0]));
+  expect(runCommand("M", rover("S",[1,1]))).toEqual(rover("S",[1,0]));
 });
 
 test("When moving W,decrement x coordinate by 1 keeping y coordinate unchanged", () => {
-  expect(act("M", rover("W",[1,1]))).toEqual(rover("W",[0,1]));
+  expect(runCommand("M", rover("W",[1,1]))).toEqual(rover("W",[0,1]));
 });
 
 test("When executing multiple commands", () => {
   expect(runCommand("LMLMLMLMM", rover("N",[1,2]))).toEqual(rover("N",[1,3]));
+});
+
+test("When executing multiple commands", () => {
+  expect(runCommand("MMRMMRMRRM", rover("E",[3,3]))).toEqual(rover("E",[5,1]));
 });

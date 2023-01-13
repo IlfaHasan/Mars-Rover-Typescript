@@ -7,8 +7,10 @@ export const rover = (heading: Heading, position: Coordinates): RoverState => ({
   heading,
   position: position,
 });
-const startPosition = () => [1, 1];
 
+type validMove=
+|(RoverState & {_: "Success" })
+|(RoverState &{_: "Failure" });
 const getMovedPosition = (
   heading: Heading,
   position: Coordinates
@@ -21,18 +23,18 @@ const getMovedPosition = (
   else return position;
 };
 
-const move = (rover: RoverState) => ({
+const move = (rover: RoverState):validMove => ({
   ...rover,
-  position: getMovedPosition(rover.heading, rover.position),
+  position: getMovedPosition(rover.heading, rover.position),_:"Success"
 });
 
-const spin = (turns: number) => (rover: RoverState) => {
+const spin = (turns: number) => (rover: RoverState):validMove => {
   const index = direction.indexOf(rover.heading);
   const newHeading = direction[(index + turns) % 4];
-  return { ...rover, heading: newHeading };
+  return { ...rover, heading: newHeading,_:"Success" };
 };
 
-export const act = (state: RoverState, command: string): RoverState => {
+export const act = (state: validMove, command: string): validMove => {
   if (command === "L") return turnLeft(state);
   if (command === "R") return turnRight(state);
   if (command === "M") return move(state);
@@ -40,7 +42,7 @@ export const act = (state: RoverState, command: string): RoverState => {
 };
 
 export const runCommand = (commands: string, state: RoverState) =>
-  commands.split("").reduce(act, state);
+  commands.split("").reduce(act, {...state, _: "Success" });
 //turnLeft
 const turnLeft = spin(3);
 
@@ -58,6 +60,7 @@ const print = (state: RoverState) => `${state.position[0]} ${state.position[1]} 
 
 export const run = (input: Array<string>): Array<string> => {
   const output=[];
+  input.shift();
   while(input.length>0)
   {
     const [location, commands]= [input.shift(),input.shift()];
